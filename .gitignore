@@ -1,3 +1,6 @@
 myenv
 transcripts
-audios_input
+audio_inputs/*
+
+!audio_inputs/
+!audio_inputs/readme.md
