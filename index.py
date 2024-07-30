@@ -9,13 +9,20 @@ load_dotenv()
 
 # Use environment variables
 model_size = os.getenv("MODEL_SIZE", "medium")
-audio_file = os.getenv("AUDIO_FILE")
+audio_file_name = os.getenv("AUDIO_FILE")
+
+# Construct the full path to the audio file
+audio_file = os.path.join("audio_inputs", audio_file_name)
+
+# Check if the audio file exists
+if not os.path.exists(audio_file):
+    raise FileNotFoundError(f"Audio file not found: {audio_file}")
 
 model = whisper.load_model(model_size)
 result = model.transcribe(audio_file)
 
 # Extract the name of the recording without extension
-audio_name = Path(audio_file).stem
+audio_name = Path(audio_file_name).stem
 
 # Create the output directory using the requested structure
 output_directory = f"./transcripts/{audio_name}/{model_size}"

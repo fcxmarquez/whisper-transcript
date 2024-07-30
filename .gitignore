@@ -4,3 +4,4 @@ audio_inputs/*
 
 !audio_inputs/
 !audio_inputs/readme.md
+.env
