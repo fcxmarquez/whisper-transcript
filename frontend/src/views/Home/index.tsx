@@ -18,9 +18,9 @@ export const Home = () => {
 
   return (
     <>
-      <Box minHeight="100vh" bg="gray.900" color="white" p={8}>
-        <VStack spacing={6} maxWidth="400px" margin="auto">
-          <Heading>Audio Transcription App</Heading>
+      <Box minHeight="100vh" bg="gray.900" color="white" p={8} display="flex" justifyContent="center" alignItems="center">
+        <VStack spacing={6} maxWidth="400px">
+          <Heading>Whisper Transcript</Heading>
           <Box width="100%">
             <input
               type="file"
