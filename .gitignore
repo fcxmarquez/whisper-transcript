@@ -66,3 +66,6 @@ logs/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Todos
+**/todo.md
