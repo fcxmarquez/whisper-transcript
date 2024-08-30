@@ -49,7 +49,18 @@ if __name__ == "__main__":
         run_linters()
 
     print("Starting the Flask application...")
-    from app import create_app
 
-    app = create_app()
-    app.run(debug=True)
+    env = os.environ.get("FLASK_ENV", "production")
+
+    if env == "development":
+        from backend.app import create_app
+        from backend.config import DevelopmentConfig
+
+        app = create_app(DevelopmentConfig)
+    else:
+        from backend.app import create_app
+        from backend.config import ProductionConfig
+
+        app = create_app(ProductionConfig)
+
+    app.run(debug=app.config["DEBUG"])
