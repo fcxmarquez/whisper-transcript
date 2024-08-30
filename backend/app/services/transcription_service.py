@@ -1,28 +1,36 @@
 import os
 import whisper
-from whisper.utils import get_writer
-from pathlib import Path
+import tempfile
 from flask import current_app
 from werkzeug.utils import secure_filename
 
 
 def transcribe_audio(file):
-    filename = secure_filename(file.filename)
-    filepath = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
-    file.save(filepath)
+    try:
+        # Get the file extension
+        _, file_extension = os.path.splitext(secure_filename(file.filename))
 
-    model = whisper.load_model(current_app.config["MODEL_SIZE"])
-    result = model.transcribe(filepath)
+        # Create a temporary file with the correct extension
+        with tempfile.NamedTemporaryFile(
+            delete=False, suffix=file_extension
+        ) as temp_file:
+            file.save(temp_file)
+            temp_file_path = temp_file.name
 
-    audio_name = Path(filename).stem
-    output_directory = f"./transcripts/{audio_name}/{current_app.config['MODEL_SIZE']}"
-    os.makedirs(output_directory, exist_ok=True)
+        # Load the model (consider moving this outside the function if possible)
+        model = whisper.load_model(current_app.config.get("WHISPER_MODEL", "base"))
 
-    no_breaks_path = os.path.join(output_directory, "transcription_no_breaks.txt")
-    with open(no_breaks_path, "w", encoding="utf-8") as txt:
-        txt.write(result["text"])
+        # Transcribe the audio file
+        result = model.transcribe(temp_file_path)
 
-    txt_writer = get_writer("txt", output_directory)
-    txt_writer(result, filepath)
+        # Delete the temporary file
+        os.unlink(temp_file_path)
 
-    return {"transcription": result["text"], "output_directory": output_directory}
+        return {"transcription": result["text"]}
+    except Exception as e:
+        current_app.logger.error(f"Transcription error: {str(e)}")
+        return {"error": "An error occurred during transcription"}, 500
+    finally:
+        # Ensure temporary file is deleted even if an exception occurs
+        if "temp_file_path" in locals() and os.path.exists(temp_file_path):
+            os.unlink(temp_file_path)
