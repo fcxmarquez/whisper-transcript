@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Box, VStack, Heading, Button, Text, Textarea } from '@chakra-ui/react'
+import { useTranscribeMutation } from '@/requests/transcribe'
 
 export const Home = () => {
   const [file, setFile] = useState<File | null>(null)
-  const [transcription, setTranscription] = useState('')
+  const transcribeMutation = useTranscribeMutation()
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -12,8 +13,11 @@ export const Home = () => {
   }
 
   const handleTranscribe = () => {
-    // Implement transcription logic here
-    setTranscription('This is the transcribed text.')
+    if (!file) return
+
+    const formData = new FormData()
+    formData.append('file', file)
+    transcribeMutation.mutate(formData)
   }
 
   return (
@@ -43,14 +47,15 @@ export const Home = () => {
               colorScheme="blue"
               width="100%"
               onClick={handleTranscribe}
-              isDisabled={!file}
+              isDisabled={!file || transcribeMutation.isPending}
+              isLoading={transcribeMutation.isPending}
             >
               Upload & Transcribe
             </Button>
             <VStack width="100%" align="start">
               <Text fontWeight="bold">Transcription:</Text>
               <Textarea
-                value={transcription}
+                value={transcribeMutation.data || ''}
                 readOnly
                 bg="gray.700"
                 borderColor="gray.600"
