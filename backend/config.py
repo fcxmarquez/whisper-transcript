@@ -7,6 +7,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
     DEBUG = os.environ.get('FLASK_DEBUG', '0') == '1'
     ENV = os.environ.get('FLASK_ENV', 'production')
+    CORS_ORIGIN = os.environ.get('CORS_ORIGIN', 'http://localhost:5173')
 
 class DevelopmentConfig(Config):
     DEBUG = True
