@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, VStack, Heading, Button, Text, Textarea } from '@chakra-ui/react'
+import { Box, VStack, Heading, Button, Text, Textarea, Link } from '@chakra-ui/react'
 import { useTranscribeMutation } from '@/requests/transcribe'
 
 export const Home = () => {
@@ -65,7 +65,7 @@ export const Home = () => {
           </VStack>
         </Box>
         <Text textAlign="center" fontSize="sm" mt={4}>
-          Made by <Text as="span" fontWeight="bold">fcxmarquez</Text>
+          Made with ❤️ by <Link href="https://fcxmarquez.com" isExternal fontWeight="bold">fcxmarquez</Link>
         </Text>
       </Box>
     </>
