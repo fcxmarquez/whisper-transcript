@@ -69,3 +69,10 @@ Thumbs.db
 
 # Todos
 **/todo.md
+
+# ai
+ai/
+
+# Docker
+.dockerignore
+docker-compose.override.yml

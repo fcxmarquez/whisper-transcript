@@ -1,8 +1,18 @@
 import os
 import whisper
 import tempfile
+import torch
 from flask import current_app
 from werkzeug.utils import secure_filename
+
+
+def get_device():
+    if torch.cuda.is_available():
+        return "cuda"
+    elif hasattr(torch.version, "hip") and torch.version.hip is not None:
+        return "rocm"
+    else:
+        return "cpu"
 
 
 def transcribe_audio(file):
@@ -17,8 +27,21 @@ def transcribe_audio(file):
             file.save(temp_file)
             temp_file_path = temp_file.name
 
-        # Load the model (consider moving this outside the function if possible)
-        model = whisper.load_model(current_app.config.get("WHISPER_MODEL", "base"))
+        # Check if CUDA is available and set the device
+        device = get_device()
+        current_app.logger.info(f"Using device: {device}")
+
+        if device == "cuda":
+            current_app.logger.info(f"CUDA device: {torch.cuda.get_device_name(0)}")
+        elif device == "rocm":
+            current_app.logger.info("Using ROCm for AMD GPU")
+        else:
+            current_app.logger.info("Using CPU")
+
+        # Load the model with the specified device
+        model_name = current_app.config.get("WHISPER_MODEL", "base")
+        current_app.logger.info(f"Using Whisper model: {model_name}")
+        model = whisper.load_model(model_name).to(device)
 
         # Transcribe the audio file
         result = model.transcribe(temp_file_path)

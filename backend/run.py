@@ -2,8 +2,10 @@ import subprocess
 import sys
 import os
 import argparse
+from pathlib import Path
+import logging
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+logging.basicConfig(level=logging.INFO)
 
 
 def run_command(command, timeout=60):
@@ -53,14 +55,14 @@ if __name__ == "__main__":
     env = os.environ.get("FLASK_ENV", "production")
 
     if env == "development":
-        from backend.app import create_app
-        from backend.config import DevelopmentConfig
+        from app import create_app
+        from config import DevelopmentConfig
 
         app = create_app(DevelopmentConfig)
     else:
-        from backend.app import create_app
-        from backend.config import ProductionConfig
+        from app import create_app
+        from config import ProductionConfig
 
         app = create_app(ProductionConfig)
 
-    app.run(debug=app.config["DEBUG"])
+    app.run(debug=app.config["DEBUG"], host="0.0.0.0")

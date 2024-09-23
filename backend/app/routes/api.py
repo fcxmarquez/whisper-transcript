@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from backend.app.services.transcription_service import transcribe_audio
+from app.services.transcription_service import transcribe_audio
 
 bp = Blueprint("api", __name__)
 
