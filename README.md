@@ -1,12 +1,15 @@
 # ⚙️ Setup 
 
+## Backend Setup
+
 ## 🚀 One Command Setup
 
-*(Assuming you have a script for this)*
+Only works on Unix-based systems (Linux, macOS).
+```bash
+  chmod +x ./setup.sh && ./setup.sh
+```
 
-## 🧰 Fine-Grained Setup
-
-### Backend Setup
+### 🧰 Fine-Grained Setup
 
 > ⚠️ Before running the GPU detection script, make sure `nvidia-smi` or `rocm-smi` is installed to correctly detect the GPU.
 
@@ -41,7 +44,8 @@
      ```
 
 > ⚠️ Warning: The AMD Dockerfile is not tested yet.
-### Frontend setup
+
+## Frontend setup
 
 1. Go to the frontend directory:
 ```bash
@@ -61,7 +65,7 @@ In development mode:
 npm run dev
 ```
 
-In production mode:
+In preview mode:
 ```bash
 npm run build && npm run preview
 ```
