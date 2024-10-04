@@ -2,8 +2,9 @@ import os
 import whisper
 import tempfile
 import torch
-from flask import current_app
+from flask import current_app, abort
 from werkzeug.utils import secure_filename
+from pathlib import Path
 
 
 def get_device():
@@ -41,19 +42,25 @@ def transcribe_audio(file):
         # Load the model with the specified device
         model_name = current_app.config.get("WHISPER_MODEL", "base")
         current_app.logger.info(f"Using Whisper model: {model_name}")
-        model = whisper.load_model(model_name).to(device)
+
+        try:
+            model = whisper.load_model(model_name).to(device)
+        except ValueError as e:
+            if "is not a valid model name" in str(e):
+                current_app.logger.error(f"Invalid Whisper model: {model_name}")
+                abort(400, description=f"Invalid Whisper model: {model_name}")
+            raise
 
         # Transcribe the audio file
         result = model.transcribe(temp_file_path)
 
-        # Delete the temporary file
-        os.unlink(temp_file_path)
-
         return {"transcription": result["text"]}
     except Exception as e:
         current_app.logger.error(f"Transcription error: {str(e)}")
-        return {"error": "An error occurred during transcription"}, 500
+        abort(500, description="An error occurred during transcription")
     finally:
         # Ensure temporary file is deleted even if an exception occurs
         if "temp_file_path" in locals() and os.path.exists(temp_file_path):
             os.unlink(temp_file_path)
+
+# The save_transcription function has been removed
